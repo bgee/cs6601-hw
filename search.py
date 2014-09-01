@@ -69,6 +69,9 @@ def bfs(graph, start, goal):
 
     return None
 
+
+def ucs(graph, start, goal):
+    pass
 """
 Backtrack and output your solution
 """
