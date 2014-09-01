@@ -38,6 +38,18 @@ class State:
             return self.node['data'].id == other.node['data'].id
         return NotImplemented
 
+class CostState(State):
+
+    def __init__(self, node, parent, cost):
+        self.node = node
+        self.parent = parent
+        self.cost = cost
+
+    def __eq__(self, other):
+        if isinstance(other, CostState):
+            return self.node['data'].id == other.node['data'].id
+        return NotImplemented
+
 """
 Implements BFS on our GPS data
 
