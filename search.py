@@ -1,5 +1,6 @@
 from osm2networkx import *
 import random
+from operator import attrgetter
 
 """
 Searching a street network using Breadth First Search
@@ -27,6 +28,13 @@ The state space in our problem hold:
    2) A parent node
 
 """
+def find(state, state_list):
+    for n in state_list:
+        if state.node['data'].id == n.node['data'].id:
+            return n
+
+    return None
+
 class State:
 
     def __init__(self, node, parent):
@@ -46,7 +54,7 @@ class CostState(State):
         self.cost = cost
 
     def __eq__(self, other):
-        if isinstance(other, CostState):
+        if issubclass(other, State):
             return self.node['data'].id == other.node['data'].id
         return NotImplemented
 
@@ -83,7 +91,35 @@ def bfs(graph, start, goal):
 
 
 def ucs(graph, start, goal):
-    pass
+    frontier = [CostState(start, None, 0)]
+    explored = []
+    num_exp = 0
+    while len(frontier) > 0:
+        frontier.sort(key = attrgetter('cost'))
+        node = frontier.pop(0)
+        if node == goal:
+            print "Goal found, explored: ", num_explored, "\n\n"
+            return node
+        explored.append(node)
+        for edge in networkx.edges(graph, node.node['data'].id):
+            lat = graph.node[edge[1]].['data'].lat
+            lon = graph.node[edge[1]].['data'].lon
+            distance = sqrt((lat-node.['data'].lat)**2 + (lon-node.['data'].lon)**2)
+            child = CostState(graph.node[edge[1]], node, node.cost+distance)
+            found_in_frontier = find(child, frontier)
+            found_in_explored = find(child, explored)
+            if (found_in_frontier == None) && (found_in_explored == None):
+                frontier.append(child)
+                num_explored = num_explored + 1
+            elif (found_in_frontier != None)&& (found_in_frontier.cost>child.cost):
+                frontier.remove(found_in_frontier)
+                frontier.append(child)
+    
+    print "No path found, explored: ", num_explored
+
+    return None
+        
+
 """
 Backtrack and output your solution
 """
@@ -119,7 +155,8 @@ print "NUMBER OF EDGES: ", len(graph.edges())
 print "START:           ", start['data'].id
 print "STOP :           ", stop['data'].id
 
-state = bfs(graph, State(start, None), State(stop, None))
+#state = bfs(graph, State(start, None), State(stop, None))
+state = ucs(graph, State(start, None), State(stop, None))
 if state != None:
     backtrack(state, graph)
 
