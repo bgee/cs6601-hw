@@ -125,6 +125,9 @@ def ucs(graph, start, goal_state):
     return None
         
 
+def bi(graph, start, goal_state):
+    pass
+
 """
 Backtrack and output your solution
 """
