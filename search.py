@@ -1,6 +1,7 @@
 from osm2networkx import *
 import random
 from operator import attrgetter
+from math import sqrt
 
 """
 Searching a street network using Breadth First Search
@@ -108,7 +109,7 @@ def ucs(graph, start, goal_state):
         for edge in networkx.edges(graph, node.node['data'].id):
             lat = graph.node[edge[1]]['data'].lat
             lon = graph.node[edge[1]]['data'].lon
-            distance = sqrt((lat-node['data'].lat)**2 + (lon-node['data'].lon)**2)
+            distance = sqrt((lat-node.node['data'].lat)**2 + (lon-node.node['data'].lon)**2)
             child = CostState(graph.node[edge[1]], node, node.cost+distance)
             found_in_frontier = find(child, frontier)
             found_in_explored = find(child, explored)
@@ -159,6 +160,13 @@ print "NUMBER OF EDGES: ", len(graph.edges())
 print "START:           ", start['data'].id
 print "STOP :           ", stop['data'].id
 
+state = bfs(graph, State(start, None), State(stop, None))
+#state = ucs(graph, State(start, None), State(stop, None))
+#state = None
+if state != None:
+    backtrack(state, graph)
+
+print "\n\n"
 #state = bfs(graph, State(start, None), State(stop, None))
 state = ucs(graph, State(start, None), State(stop, None))
 #state = None
