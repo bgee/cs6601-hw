@@ -54,9 +54,11 @@ class CostState(State):
         self.cost = cost
 
     def __eq__(self, other):
-        if issubclass(other, State):
+        if isinstance(other, State):
             return self.node['data'].id == other.node['data'].id
         return NotImplemented
+
+    #def __getitem__(self)
 
 """
 Implements BFS on our GPS data
@@ -90,28 +92,30 @@ def bfs(graph, start, goal):
     return None
 
 
-def ucs(graph, start, goal):
-    frontier = [CostState(start, None, 0)]
+def ucs(graph, start, goal_state):
+    frontier = [CostState(start.node, None, 0)]
+    goal = CostState(goal_state.node, None, 0)
     explored = []
-    num_exp = 0
+    num_explored = 0
     while len(frontier) > 0:
         frontier.sort(key = attrgetter('cost'))
         node = frontier.pop(0)
+
         if node == goal:
             print "Goal found, explored: ", num_explored, "\n\n"
             return node
         explored.append(node)
         for edge in networkx.edges(graph, node.node['data'].id):
-            lat = graph.node[edge[1]].['data'].lat
-            lon = graph.node[edge[1]].['data'].lon
-            distance = sqrt((lat-node.['data'].lat)**2 + (lon-node.['data'].lon)**2)
+            lat = graph.node[edge[1]]['data'].lat
+            lon = graph.node[edge[1]]['data'].lon
+            distance = sqrt((lat-node['data'].lat)**2 + (lon-node['data'].lon)**2)
             child = CostState(graph.node[edge[1]], node, node.cost+distance)
             found_in_frontier = find(child, frontier)
             found_in_explored = find(child, explored)
-            if (found_in_frontier == None) && (found_in_explored == None):
+            if (found_in_frontier == None) and (found_in_explored == None):
                 frontier.append(child)
                 num_explored = num_explored + 1
-            elif (found_in_frontier != None)&& (found_in_frontier.cost>child.cost):
+            elif (found_in_frontier != None) and (found_in_frontier.cost>child.cost):
                 frontier.remove(found_in_frontier)
                 frontier.append(child)
     
@@ -157,6 +161,7 @@ print "STOP :           ", stop['data'].id
 
 #state = bfs(graph, State(start, None), State(stop, None))
 state = ucs(graph, State(start, None), State(stop, None))
+#state = None
 if state != None:
     backtrack(state, graph)
 
