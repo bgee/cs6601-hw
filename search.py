@@ -134,6 +134,10 @@ def bi(graph, start, goal):
     frontier_goal = [goal]
     explored_start = []
     explored_goal = []
+    num_start = 0
+    num_goal = 0
+    while (len(frontier_start)>0) or (len(frontier_goal) > 0):
+
 
 """
 Backtrack and output your solution
