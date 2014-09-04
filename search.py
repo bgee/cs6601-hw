@@ -155,7 +155,7 @@ def bi(graph, start, goal):
     num_start = 0
     num_goal = 0
     while (len(frontier_start)>0) and (len(frontier_goal) > 0):
-        start_node = frontier_start.pop[0]
+        start_node = frontier_start.pop(0)
         explored_frontier.append(start_node)
         for edge in networkx.edges(graph, start_node.node['data'].id):
             child = State(graph.node[edge[1]], node)
@@ -169,7 +169,7 @@ def bi(graph, start, goal):
                     frontier_start.append(child)
                 num_start = num_start + 1
 
-        stop_node = frontier_stop.pop[0]
+        stop_node = frontier_stop.pop(0)
         explored_stop.append(stop_node)
         for edge in networkx.edges(graph, stop_node.node['data'].id):
             child = State(graph.node[edge[1]], node)
