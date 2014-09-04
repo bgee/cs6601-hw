@@ -124,6 +124,24 @@ def ucs(graph, start, goal_state):
 
     return None
         
+def goal_check(start_list, stop_list):
+    for item1 in start_list:
+        for item2 in stop_list:
+            if item1.node['data'].id == item2.node['data'].id:
+                return True
+
+    return False
+def reverse_path(start_list, stop_list):
+    reversed_stop_list = []
+    last_stop = stop_list[len(stop_list)-1]
+    last_start = start_list[len(start_list)-1]
+    for item in stop_list:
+        reversed = State(item.parent, item.node)
+        reversed_stop_list.append(reversed)
+    reversed_stop_list.pop(len(reversed_stop_list)-1)
+    start_list.append(State(last_stop.node, last_start.node))
+    start_list.append(reversed_stop_list)
+    return reversed_stop_list[0]
 
 def bi(graph, start, goal):
     if start == goal:
@@ -146,7 +164,7 @@ def bi(graph, start, goal):
                 if goal_check(frontier_start, frontier_stop):
                     print "Goal found, explored: ", num_start+num_stop, "\n\n"
                     # reverse child and parent
-                    return child
+                    return reverse_path(start, stop)
                 else:
                     frontier_start.append(child)
                 num_start = num_start + 1
@@ -160,7 +178,7 @@ def bi(graph, start, goal):
                 if goal_check(frontier_start, frontier_stop):
                     print "Goal found, explored: ", num_start+num_stop, "\n\n"
                     # reverse child and parent
-                    return child
+                    return reverse_path(start, stop)
                 else:
                     frontier_stop.append(child)
                 num_stop = num_stop + 1
