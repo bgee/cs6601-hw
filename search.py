@@ -234,6 +234,62 @@ def bi(graph, start, goal):
 
     return None
 
+def tri(graph, state_1, state_2, state_3):
+    if state_1 == state_2 and state2 == state_3:
+        print "3 CITIES EQUAL"
+        return None
+    frontier_1 = [state_1]
+    frontier_2 = [state_2]
+    frontier_3 = [state_3]
+    explored_1 = []
+    explored_2 = []
+    explored_3 = []
+    num_1 = 0
+    num_2 = 0
+    num_3 = 0
+    while (len(frontier_1)>0) and (len(frontier_2)>0) and (len(frontier_3)>0):
+        node_1 = frontier_1.pop(0)
+        explored_1.append(node_1)
+        for edge in networkx.edges(graph, node_1.node['data'].id):
+            child = State(graph.node[edge[1]], node_1)
+            if (child not in explored_1) and (child not in frontier_1):
+                # Goal check
+                if goal_check(frontier_1, frontier_2) and goal_check(frontier_2, frontier_3):
+                    print "Goal found, explored: ", num_1+num_2+num_3, "\n\n"
+
+                    #return value
+                    return child
+                else:
+                    frontier_1.append(child)
+                num_1 = num_1 + 1
+
+        node_2 = frontier_2.pop(0)
+        explored_2.append(node_2)
+        for edge in networkx.edges(graph, node_2.node['data'].id):
+            child = State(graph.node[edge[1]], node_2)
+            if (child not in explored_2) and (child not in frontier_2):
+                if goal_check(frontier_1, frontier_2) and goal_check(frontier_2, frontier_3):
+                    print "Goal found, explored: ", num_1+num_2+num_3, "\n\n"
+
+                    #return value
+                    return child
+                else:
+                    frontier_2.append(child)
+                num_2 = num_2 + 1
+
+        node_3 = frontier_3.pop(0)
+        explored_3.append(node_3)
+        for edge in networkx.edges(graph, node_3.node['data'].id):
+            child = State(graph.node[edge[1]], node_3)
+            if (child not in explored_3) and (child not in frontier_3):
+                if goal_check(frontier_1, frontier_2) and goal_check(frontier_2, frontier_3):
+                    print "Goal found, explored: ", num_1+num_2+num_3, "\n\n"
+                    return child
+                else: frontier_3.append(child)
+                num_3 = num_3 + 1
+    print "No path found, explored: ", num_1+num_2+num_3
+    return None
+
 
 """
 Backtrack and output your solution
