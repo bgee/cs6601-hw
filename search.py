@@ -237,3 +237,8 @@ if state != None:
     backtrack(state, graph)
 
 print "\n\n"
+
+state = bi(graph, State(start, None), State(stop, None))
+
+if state != None:
+    backtrack(state, graph)
