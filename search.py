@@ -136,7 +136,38 @@ def bi(graph, start, goal):
     explored_goal = []
     num_start = 0
     num_goal = 0
-    while (len(frontier_start)>0) or (len(frontier_goal) > 0):
+    while (len(frontier_start)>0) and (len(frontier_goal) > 0):
+        start_node = frontier_start.pop[0]
+        explored_frontier.append(start_node)
+        for edge in networkx.edges(graph, start_node.node['data'].id):
+            child = State(graph.node[edge[1]], node)
+            if (child not in explored_start) and (child not in frontier_start) and (child not in explored_stop) and (child not in frontier_stop):
+                # Goal check
+                if goal_check(frontier_start, frontier_stop):
+                    print "Goal found, explored: ", num_start+num_stop, "\n\n"
+                    # reverse child and parent
+                    return child
+                else:
+                    frontier_start.append(child)
+                num_start = num_start + 1
+
+        stop_node = frontier_stop.pop[0]
+        explored_stop.append(stop_node)
+        for edge in networkx.edges(graph, stop_node.node['data'].id):
+            child = State(graph.node[edge[1]], node)
+            if (child not in explored_start) and (child not in frontier_start) and (child not in explored_stop) and (child not in frontier_stop):
+                # Goal check
+                if goal_check(frontier_start, frontier_stop):
+                    print "Goal found, explored: ", num_start+num_stop, "\n\n"
+                    # reverse child and parent
+                    return child
+                else:
+                    frontier_stop.append(child)
+                num_stop = num_stop + 1
+
+    print "No path found, explored: ", num_start+num_stop
+
+    return None
 
 
 """
