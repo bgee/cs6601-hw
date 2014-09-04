@@ -159,6 +159,7 @@ def goal_check(start_list, stop_list):
     for item1 in start_list:
         for item2 in stop_list:
             if item1.node['data'].id == item2.node['data'].id:
+                print "equal node = ", item1.node['data'].id
                 return True
 
     return False
@@ -174,6 +175,15 @@ def reverse_path(start_list, stop_list):
     start_list.append(reversed_stop_list)
     return reversed_stop_list[0]
 
+def print_list(list):
+    for item in list:
+        if item.parent != None and item.node != None:
+            print item.node['data'].id, " ", item.parent['data'].id
+        else:
+            print item.node['data']
+
+#def find_node(start_list, stop_list):
+
 def bi(graph, start, goal):
     if start == goal:
         print "START === GOAL"
@@ -186,8 +196,7 @@ def bi(graph, start, goal):
     num_start = 0
     num_goal = 0
     while (len(frontier_start)>0) and (len(frontier_goal) > 0):
-        #print "start frontier: ",len(frontier_start)," goal frontier: ",len(frontier_goal)
-        #print "start explored: ",num_start, " goal explored: ",num_goal
+        
         start_node = frontier_start.pop(0)
         explored_start.append(start_node)
         for edge in networkx.edges(graph, start_node.node['data'].id):
@@ -197,7 +206,8 @@ def bi(graph, start, goal):
                 if goal_check(frontier_start, frontier_goal):
                     print "Goal found, explored: ", num_start+num_goal, "\n\n"
                     # reverse child and parent
-                    backtrack(frontier_goal[0], graph)
+                    
+                    #print_list(frontier_start)
                     return reverse_path(frontier_start, frontier_goal)
                 else:
                     frontier_start.append(child)
@@ -213,7 +223,8 @@ def bi(graph, start, goal):
                 if goal_check(frontier_start, frontier_goal):
                     print "Goal found, explored: ", num_start+num_goal, "\n\n"
                     # reverse child and parent
-                    backtrack(frontier_goal[0], graph)
+                    
+                    #print_list(frontier_start)
                     return reverse_path(frontier_start, frontier_goal)
                 else:
                     frontier_goal.append(child)
@@ -281,7 +292,7 @@ if state != None:
 
 print "\n\n"
 
-'''state = bi(graph, State(start, None), State(stop, None))
+state = bi(graph, State(start, None), State(stop, None))
 
-if state != None:
+'''if state != None:
     backtrack(state, graph)'''
