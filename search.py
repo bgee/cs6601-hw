@@ -159,7 +159,7 @@ def goal_check(start_list, stop_list):
     for item1 in start_list:
         for item2 in stop_list:
             if item1.node['data'].id == item2.node['data'].id:
-                print "equal node = ", item1.node['data'].id
+                #print "equal node = ", item1.node['data'].id
                 return True
 
     return False
@@ -318,37 +318,47 @@ graph = read_osm('atlanta.osm', only_roads)
 
 start_num = random.randint(0, len(graph.nodes()))
 stop_num = random.randint(0, len(graph.nodes()))
+inter_num = random.randint(0, len(graph.nodes()))
 
 start     = graph.node[graph.nodes()[start_num]]
 stop      = graph.node[graph.nodes()[stop_num]]
+inter     = graph.node[graph.nodes()[inter_num]]
+
 print "NUMBER OF NODES: ", len(graph.nodes())
 print "NUMBER OF EDGES: ", len(graph.edges())
 print "START:           ", start['data'].id
 print "STOP :           ", stop['data'].id
+print "INTER:           ", inter['data'].id
 
 state = bfs(graph, State(start, None), State(stop, None))
+state = bfs(graph, State(stop, None), State(inter, None))
 #state = ucs(graph, State(start, None), State(stop, None))
 #state = None
-if state != None:
-    backtrack(state, graph)
+#if state != None:
+#    backtrack(state, graph)
 
 print "\n\n"
 #state = bfs(graph, State(start, None), State(stop, None))
 state = ucs(graph, State(start, None), State(stop, None))
+state = ucs(graph, State(stop, None), State(inter, None))
 #state = None
-if state != None:
-    backtrack(state, graph)
+#if state != None:
+#    backtrack(state, graph)
 
 print "\n\n"
 
 state = a_star(graph, State(start, None), State(stop, None))
+state = a_star(graph, State(stop, None), State(inter, None))
 #state = None
-if state != None:
-    backtrack(state, graph)
+#if state != None:
+#    backtrack(state, graph)
 
 print "\n\n"
 
 state = bi(graph, State(start, None), State(stop, None))
+state = bi(graph, State(stop, None), State(inter, None))
 
 '''if state != None:
     backtrack(state, graph)'''
+print "\n\n"
+state = tri(graph, State(start, None), State(inter, None), State(stop, None))
