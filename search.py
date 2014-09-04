@@ -123,7 +123,38 @@ def ucs(graph, start, goal_state):
     print "No path found, explored: ", num_explored
 
     return None
-        
+
+def a_star(graph, start, goal_state):
+    frontier = [CostState(start.node, None, 0)]
+    goal = CostState(goal_state.node, None, 0)
+    explored = []
+    num_explored = 0
+    while len(frontier) > 0:
+        frontier.sort(key = attrgetter('cost'))
+        node = frontier.pop(0)
+
+        if node == goal:
+            print "Goal found, explored: ", num_explored, "\n\n"
+            return node
+        explored.append(node)
+        for edge in networkx.edges(graph, node.node['data'].id):
+            lat = graph.node[edge[1]]['data'].lat
+            lon = graph.node[edge[1]]['data'].lon
+            distance = sqrt((lat-node.node['data'].lat)**2 + (lon-node.node['data'].lon)**2)
+            distance = distance + sqrt((lat-goal.node['data'].lat)**2 + (lon-goal.node['data'].lat)**2)
+            child = CostState(graph.node[edge[1]], node, node.cost+distance)
+            found_in_frontier = find(child, frontier)
+            found_in_explored = find(child, explored)
+            if (found_in_frontier == None) and (found_in_explored == None):
+                frontier.append(child)
+                num_explored = num_explored + 1
+            elif (found_in_frontier != None) and (found_in_frontier.cost>child.cost):
+                frontier.remove(found_in_frontier)
+                frontier.append(child)
+    
+    print "No path found, explored: ", num_explored
+
+    return None
 def goal_check(start_list, stop_list):
     for item1 in start_list:
         for item2 in stop_list:
@@ -155,35 +186,40 @@ def bi(graph, start, goal):
     num_start = 0
     num_goal = 0
     while (len(frontier_start)>0) and (len(frontier_goal) > 0):
+        #print "start frontier: ",len(frontier_start)," goal frontier: ",len(frontier_goal)
+        #print "start explored: ",num_start, " goal explored: ",num_goal
         start_node = frontier_start.pop(0)
-        explored_frontier.append(start_node)
+        explored_start.append(start_node)
         for edge in networkx.edges(graph, start_node.node['data'].id):
-            child = State(graph.node[edge[1]], node)
-            if (child not in explored_start) and (child not in frontier_start) and (child not in explored_stop) and (child not in frontier_stop):
+            child = State(graph.node[edge[1]], start_node)
+            if (child not in explored_start) and (child not in frontier_start): #and (child not in explored_goal) and (child not in frontier_goal):
                 # Goal check
-                if goal_check(frontier_start, frontier_stop):
-                    print "Goal found, explored: ", num_start+num_stop, "\n\n"
+                if goal_check(frontier_start, frontier_goal):
+                    print "Goal found, explored: ", num_start+num_goal, "\n\n"
                     # reverse child and parent
-                    return reverse_path(start, stop)
+                    backtrack(frontier_goal[0], graph)
+                    return reverse_path(frontier_start, frontier_goal)
                 else:
                     frontier_start.append(child)
                 num_start = num_start + 1
 
-        stop_node = frontier_stop.pop(0)
-        explored_stop.append(stop_node)
-        for edge in networkx.edges(graph, stop_node.node['data'].id):
-            child = State(graph.node[edge[1]], node)
-            if (child not in explored_start) and (child not in frontier_start) and (child not in explored_stop) and (child not in frontier_stop):
+        goal_node = frontier_goal.pop(0)
+        explored_goal.append(goal_node)
+        for edge in networkx.edges(graph, goal_node.node['data'].id):
+            child = State(graph.node[edge[1]], goal_node)
+            if (child not in explored_goal) and (child not in frontier_goal):
+                #and (child not in explored_start) and (child not in frontier_start):
                 # Goal check
-                if goal_check(frontier_start, frontier_stop):
-                    print "Goal found, explored: ", num_start+num_stop, "\n\n"
+                if goal_check(frontier_start, frontier_goal):
+                    print "Goal found, explored: ", num_start+num_goal, "\n\n"
                     # reverse child and parent
-                    return reverse_path(start, stop)
+                    backtrack(frontier_goal[0], graph)
+                    return reverse_path(frontier_start, frontier_goal)
                 else:
-                    frontier_stop.append(child)
-                num_stop = num_stop + 1
+                    frontier_goal.append(child)
+                num_goal = num_goal + 1
 
-    print "No path found, explored: ", num_start+num_stop
+    print "No path found, explored: ", num_start+num_goal
 
     return None
 
@@ -238,7 +274,14 @@ if state != None:
 
 print "\n\n"
 
-state = bi(graph, State(start, None), State(stop, None))
-
+state = a_star(graph, State(start, None), State(stop, None))
+#state = None
 if state != None:
     backtrack(state, graph)
+
+print "\n\n"
+
+'''state = bi(graph, State(start, None), State(stop, None))
+
+if state != None:
+    backtrack(state, graph)'''
